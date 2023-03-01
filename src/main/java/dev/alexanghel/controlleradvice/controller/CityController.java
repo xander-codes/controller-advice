@@ -28,7 +28,8 @@ public class CityController {
 
     @PostMapping(value = "/cities"
             , consumes = MediaType.APPLICATION_JSON_VALUE
-            , produces = MediaType.APPLICATION_JSON_VALUE)
+            , produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public City createCity(@RequestBody @Valid City city) {
         return cityService.save(city);
     }
