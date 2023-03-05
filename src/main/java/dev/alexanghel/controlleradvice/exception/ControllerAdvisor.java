@@ -3,6 +3,7 @@ package dev.alexanghel.controlleradvice.exception;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,20 +21,27 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(CityNotFoundException.class)
-    public ResponseEntity<Object> handleCityNotFoundException(
-            CityNotFoundException ex, WebRequest request) {
+//    @ExceptionHandler(CityNotFoundException.class)
+//    public ResponseEntity<Object> handleCityNotFoundException(CityNotFoundException ex, WebRequest request) {
+//
+//        Map<String, Object> body = new LinkedHashMap<>();
+//        body.put("timestamp", LocalDateTime.now());
+//        body.put("message", ex.getMessage());
+//
+//        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+//    }
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    // Spring 6 version of handler
+    @ExceptionHandler
+    public ProblemDetail handleCityNotFoundException(CityNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatusCode.valueOf(404));
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+        problemDetail.setProperty("message", ex.getMessage());
+        return problemDetail;
     }
 
     @ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<Object> handleNoDataFoundException(
-            NoDataFoundException ex, WebRequest request) {
+    public ResponseEntity<Object> handleNoDataFoundException(NoDataFoundException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
@@ -41,7 +49,6 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
-
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
